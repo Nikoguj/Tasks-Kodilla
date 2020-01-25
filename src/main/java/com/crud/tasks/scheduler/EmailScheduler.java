@@ -32,7 +32,7 @@ public class EmailScheduler {
                 ""));
     }
 
-    private String taskOrTasks(long size) {
+    public String taskOrTasks(long size) {
         if(size == 1) {
             return "task";
         }else {
