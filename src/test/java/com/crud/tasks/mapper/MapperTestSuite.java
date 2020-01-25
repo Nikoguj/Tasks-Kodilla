@@ -16,8 +16,7 @@ import java.util.List;
 @SpringBootTest
 public class MapperTestSuite {
 
-    @Autowired
-    private TrelloMapper trelloMapper;
+    private TrelloMapper trelloMapper = new TrelloMapper();
 
     @Test
     public void testMapToList() {
