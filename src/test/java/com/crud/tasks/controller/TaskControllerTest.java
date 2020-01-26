@@ -7,6 +7,7 @@ import com.crud.tasks.service.DbService;
 import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,8 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,11 +90,15 @@ public class TaskControllerTest {
         Gson gson = new Gson();
         String jsonContent = gson.toJson(taskDto);
 
+        ArgumentCaptor<TaskDto> taskDtoArgumentCaptor = ArgumentCaptor.forClass(TaskDto.class);
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
         //When & Then
         mockMvc.perform(post("/v1/task/createTask").contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                 .content(jsonContent))
+                .content(jsonContent))
                 .andExpect(status().isOk());
+        verify(taskMapper, times(1)).mapToTask(taskDtoArgumentCaptor.capture());
+        verify(service, times(1)).saveTask(taskArgumentCaptor.capture());
     }
 
     @Test
@@ -115,8 +119,9 @@ public class TaskControllerTest {
     @Test
     public void testDeleteTask() throws Exception {
         mockMvc.perform(delete("/v1/task/deleteTask").contentType(MediaType.APPLICATION_JSON)
-                .param("taskId", anyString()))
+                .param("taskId", String.valueOf(anyLong())))
                 .andExpect(status().isOk());
+        verify(service, times(1)).deleteTask(anyLong());
     }
 }
 
